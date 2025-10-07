@@ -1,4 +1,4 @@
-name: Build and Push Docker Image
+name: Build, Push & Deploy Docker Image
 
 on:
   push:
@@ -19,7 +19,7 @@ on:
       - main
 
 jobs:
-  build:
+  build-deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -65,3 +65,16 @@ jobs:
 
       - name: Logout from Docker Hub
         run: docker logout
+      
+      # ---------------- Auto-deploy -----------------
+      - name: Deploy to GCP VM via SSH
+        uses: appleboy/ssh-action@v0.1.6
+        with:
+          host: ${{ secrets.GCP_VM_HOST }}
+          username: ${{ secrets.GCP_VM_USER }}
+          key: ${{ secrets.GCP_VM_SSH_KEY }}
+          script: |
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/queenlive:latest
+            docker stop queenlive || true
+            docker rm queenlive || true
+            docker run -d --name queenlive -p 80:80 ${{ secrets.DOCKERHUB_USERNAME }}/queenlive:latest
