@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>QueenLive</title>
+
+  <!-- Correct favicon path -->
+  <link rel="icon" href="/public/favicon.png" />
+
+  <!-- Open Graph (Facebook, KakaoTalk, LinkedIn, etc.) -->
+  <meta property="og:title" content="퀸라이브 - 대한민국 최고의 라이브 솔루션" />
+  <meta property="og:description" content="누구나 쉽게 라이브 방송을 시작하고, 쉽고 빠르게 상품을 판매할 수 있도록 돕습니다." />
+  <meta property="og:url" content="https://91ffa0744dae.ngrok-free.app" />
+  <meta property="og:site_name" content="퀸라이브" />
+  <meta property="og:image" content="https://91ffa0744dae.ngrok-free.app/public/thumbnail.png" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="628" />
+  <meta property="og:locale" content="ko_KR" />
+  <meta property="og:type" content="website" />
+  <meta property="og:country-name" content="South Korea" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="퀸라이브 - 대한민국 최고의 라이브 솔루션" />
+  <meta name="twitter:description" content="누구나 쉽게 라이브 방송을 시작하고, 쉽고 빠르게 상품을 판매할 수 있도록 돕습니다." />
+  <meta name="twitter:image" content="https://91ffa0744dae.ngrok-free.app/public/thumbnail.png" />
+  <meta name="twitter:image:width" content="1200" />
+  <meta name="twitter:image:height" content="628" />
+
+
+  <!-- Fonts & Tailwind -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" />
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/hero.css" />
+  <link rel="stylesheet" href="css/purpose.css" />
+  <link rel="stylesheet" href="css/sellerInterview.css" />
+  <link rel="stylesheet" href="css/growthMetrics.css" />
+  <link rel="stylesheet" href="css/timeline.css" />
+  <link rel="stylesheet" href="css/partners-marquee.css" />
+  <link rel="stylesheet" href="css/callToAction.css" />
+  <link rel="stylesheet" href="css/contact.css" />
+  <link rel="stylesheet" href="css/news-tab.css" />
+
+  <!-- Inject structured data dynamically -->
+  <script type="module">
+    import { mainStructuredData } from "/public/lib/structured-data.bundle.js";
+
+    // console.log(mainStructuredData);
+
+    // Optional: dynamically inject JSON-LD into the page
+    const script = document.createElement("script");
+    script.type = "application/ld+json";
+    script.textContent = JSON.stringify(mainStructuredData);
+    document.head.appendChild(script);
+  </script>
+
+</head>
+
+<body class="bg-white antialiased">
+  <!-- Containers -->
+  <div id="header" class="sticky top-0 z-50 w-full border-b bg-white"></div>
+
+  <!-- Main content section (dynamic, replaced via main.js) -->
+  <main id="content"></main>
+
+  <div id="footer"></div>
+
+  <!-- Scripts -->
+  <script src="js/header.js" defer></script>
+  <script src="js/main.js" defer></script>
+  <script src="js/hero.js" defer></script>
+  <script src="js/purpose.js" defer></script>
+  <script src="js/sellerInterview.js" defer></script>
+  <script src="js/growthMetrics.js" defer></script>
+  <script src="js/timeline.js" defer></script>
+  <script src="js/partners-marquee.js" defer></script>
+  <script src="js/sellerCases.js" defer></script>
+  <script src="js/successStories.js" defer></script>
+  <script src="js/news-tab.js" defer></script>
+  <script src="js/contact.js" defer></script>
+</body>
+
+</html>

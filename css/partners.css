@@ -1,0 +1,89 @@
+/* Section styling */
+.quote-section {
+  padding: 2rem 1rem;
+  background-color: #f9fafb;
+  /* light gray */
+}
+
+/* Container */
+.quote-container {
+  max-width: 768px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+/* Quote text */
+.quote-text {
+  position: relative;
+  color: #111827;
+  /* gray-900 */
+  font-weight: bold;
+}
+
+.quote-mark {
+  font-size: 3rem;
+  color: #e91e63;
+  /* pink */
+  margin-bottom: 0.5rem;
+  line-height: 1;
+}
+
+.quote-text h2 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* Responsive heading sizes */
+@media (min-width: 768px) {
+  .quote-text h2 {
+    font-size: 1.875rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .quote-text h2 {
+    font-size: 2.25rem;
+  }
+}
+
+/* Author block */
+.quote-author {
+  margin-top: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.author-image {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.author-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.author-info {
+  text-align: left;
+}
+
+.author-name {
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+}
+
+.author-role {
+  font-size: 0.875rem;
+  color: #6b7280;
+  /* gray-500 */
+  margin: 0;
+}

@@ -1,0 +1,214 @@
+/* Header */
+.site-header {
+  position: fixed;
+  top: 0;
+  z-index: 50;
+  width: 100%;
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 64px;
+  padding: 0 1.5rem;
+  max-width: 100%;
+  margin: 0;
+  position: relative;
+}
+
+.logo {
+  padding-left: 0rem;
+  border: 0px solid red;
+  display: flex;
+  align-items: right;
+  left: 1rem;
+  gap: 5rem;
+}
+
+.logo img {
+  height: 24px;
+  width: auto;
+}
+
+/* Desktop nav */
+.nav-links {
+  display: none;
+}
+
+.nav-links a {
+  font-size: .875rem;
+  line-height: 1.25rem;
+  font-weight: 600;
+  text-decoration: none;
+  margin: 0 12px;
+  color: #1e1e1f;
+  transition: color 0.2s;
+}
+
+.nav-links a:hover {
+  color: #db2777;
+  transition: color 0.4s;
+}
+
+.nav-links a.active {
+  color: #db2777;
+}
+
+.menu-btn {
+  font-size: 1.5rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  /* some spacing inside */
+  width: 40px;
+  /* square size */
+  height: 40px;
+  /* square size */
+  display: flex;
+  /* center the icon inside */
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  /* optional: makes slightly rounded square */
+  transition: background-color 0.2s ease;
+}
+
+.menu-btn:hover {
+  background-color: #e7e7e763;
+  /* light gray box */
+}
+
+/* Mobile Drawer */
+.drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.mobile-drawer {
+  position: fixed;
+  top: 0;
+  right: -100%;
+  width: 75%;
+  max-width: 360px;
+  height: 100vh;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  padding: 2rem;
+  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.2);
+  transition: right 0.5s ease;
+}
+
+.drawer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 1rem;
+}
+
+.drawer-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding-top: 1rem;
+}
+
+.drawer-nav a {
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+  text-decoration: none;
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.drawer-logo {
+  height: 2rem;
+  width: auto;
+}
+
+
+
+/* Open state */
+.drawer-open .drawer-overlay {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.drawer-open .mobile-drawer {
+  right: 0;
+}
+
+.close-btn {
+  position: absolute;
+  top: 1rem;
+  /* top-4 */
+  right: 1rem;
+  /* right-4 */
+  border-radius: 8px 8px 8px 8px;
+  /* rounded-sm */
+  opacity: 0.5;
+  background: transparent;
+  border: 2px solid;
+  cursor: pointer;
+  padding: 3px;
+  transition: opacity 0.5s ease;
+}
+
+/* Hover effect */
+.close-btn:hover {
+  opacity: 1;
+}
+
+/* Focus ring */
+.close-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #ec4899;
+  /* mimic ring-ring (pink-500) */
+}
+
+/* Disabled state */
+.close-btn:disabled {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+/* Hide "Close" text visually but keep for screen readers */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.close-btn svg {
+  width: 16px;
+  /* h-4 w-4 */
+  height: 16px;
+  pointer-events: none;
+}
+
+
+/* Desktop view */
+@media (min-width: 768px) {
+  .menu-btn {
+    display: none;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 1.5rem;
+  }
+}

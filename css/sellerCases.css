@@ -1,0 +1,260 @@
+/* Section wrapper */
+.sellers-section {
+  padding: 4rem 1rem;
+  --tw-bg-opacity: 1;
+  background-color: rgb(249 250 251 / var(--tw-bg-opacity, 1))
+    /* #f9fafb */
+  ;
+}
+
+@media (min-width: 768px) {
+  .sellers-section {
+    padding: 6rem 2rem;
+  }
+}
+
+/* Container */
+.sellers-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Header */
+.sellers-header {
+  text-align: center;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.sellers-header h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #111827;
+  line-height: 1.3;
+}
+
+@media (min-width: 640px) {
+  .sellers-header h2 {
+    font-size: 2.5rem;
+  }
+}
+
+.sellers-header p {
+  margin-top: 1rem;
+  font-size: 1.125rem;
+  color: #4b5563;
+  line-height: 1.6;
+}
+
+/* Grid */
+.sellers-grid {
+  display: grid;
+  gap: 2rem;
+  margin-top: 4rem;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+@media (min-width: 768px) {
+  .sellers-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .sellers-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Seller Card */
+.seller-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  text-decoration: none;
+  transition: transform 0.3s ease;
+}
+
+.seller-card:hover {
+  transform: scale(1.05);
+}
+
+/* Image wrapper */
+.seller-image-wrapper {
+  padding: 1rem;
+  position: relative;
+  width: 8rem;
+  height: 8rem;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: 0 0 0 2px rgb(219 39 119);
+}
+
+.seller-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: opacity 0.3s ease;
+}
+
+.seller-card:hover .seller-image {
+  opacity: 0.4;
+}
+
+.circle-seller {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: transform 0.3s ease;
+}
+
+.circle-seller:hover {
+  transform: scale(1.05);
+}
+
+.circle-image {
+  position: relative;
+  width: 8rem;
+  height: 8rem;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid white;
+  box-shadow: 0 0 0 2px rgb(219, 39, 119);
+  /* pink outline */
+}
+
+.circle-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: opacity 0.3s ease;
+}
+
+.circle-seller:hover .circle-photo {
+  opacity: 0.4;
+}
+
+.circle-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+}
+
+.circle-logo {
+  width: 40px;
+  height: 40px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.circle-seller:hover .circle-logo {
+  opacity: 1;
+}
+
+
+/* Overlay logo */
+.seller-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.seller-overlay-logo {
+  width: 40px;
+  height: 40px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.seller-card:hover .seller-overlay-logo {
+  opacity: 1;
+}
+
+/* Text */
+.seller-card h3 {
+  margin-top: 1rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.seller-role {
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #db2777;
+}
+
+.seller-desc {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: #6b7280;
+  line-height: 1.4;
+  white-space: pre-line;
+}
+
+
+
+/* Carousel Scroll */
+.video-scroller {
+  overflow: hidden;
+  width: 100%;
+}
+
+.video-scroller-inner {
+  display: flex;
+  gap: 1rem;
+  width: max-content;
+  --item-width: 180px;
+  --item-count: 0;
+  /* updated by JS */
+  --scroll-width: 0px;
+  --duration: 30s;
+
+  animation: scroll var(--duration) linear infinite;
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+@keyframes scroll {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(calc(-1 * var(--scroll-width)));
+  }
+}
+
+/* Pause on hover */
+.video-scroller:hover .video-scroller-inner {
+  animation-play-state: paused;
+}
+
+/* Mobile speed */
+@media (max-width: 768px) {
+  .video-scroller-inner {
+    --duration: 18s;
+  }
+}
+
+.video-card {
+  flex-shrink: 0;
+  cursor: pointer;
+  width: var(--item-width);
+  transition: transform 0.3s ease, border 0.3s ease;
+}
+
+.video-card:hover {
+  transform: scale(1.05);
+  border-color: #ec4899;
+  /* pink-500 */
+}

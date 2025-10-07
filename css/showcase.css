@@ -1,0 +1,183 @@
+/* FEATURES SECTION WRAPPER */
+.features-section {
+  position: relative;
+  padding: 4rem 1rem;
+  background: linear-gradient(135deg, #f9fafb 0%, #ffffff 100%);
+  overflow: hidden;
+}
+
+@media (min-width: 768px) {
+  .features-section {
+    padding: 6rem 2rem;
+  }
+}
+
+/* BACKGROUND OVERLAYS */
+.features-bg {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom right,
+      rgba(253, 242, 248, 0.3),
+      rgba(250, 245, 255, 0.2) 50%,
+      rgba(253, 242, 248, 0.3));
+}
+
+.features-bg-border-outer {
+  position: absolute;
+  inset: 0.75rem;
+  /* tighter on mobile */
+  border: 2px solid rgba(147, 51, 234, 0.2);
+  /* purple-300 @40% */
+  border-radius: 0.5rem;
+  pointer-events: none;
+}
+
+@media (min-width: 768px) {
+  .features-bg-border-outer {
+    inset: 1.5rem;
+    /* more breathing room on larger screens */
+  }
+}
+
+.features-bg-border-inner {
+  position: absolute;
+  inset: 0.5rem;
+  /* tighter on mobile */
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  border-radius: 0.5rem;
+  pointer-events: none;
+  z-index: 10;
+}
+
+@media (min-width: 768px) {
+  .features-bg-border-inner {
+    inset: 1rem;
+    /* more breathing room on larger screens */
+  }
+}
+
+/* CONTENT CONTAINER */
+.features-container {
+  position: relative;
+  z-index: 20;
+  max-width: 1100px;
+  /* slightly less than 1200px to fit borders */
+  margin: 0 auto;
+  padding: 0 1rem;
+  /* ensures cards don’t touch borders */
+  text-align: center;
+  box-sizing: border-box;
+}
+
+/* HEADER */
+.features-header h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.25;
+  color: #111827;
+}
+
+@media (min-width: 640px) {
+  .features-header h2 {
+    font-size: 2.5rem;
+  }
+}
+
+.features-header p {
+  margin-top: 1rem;
+  font-size: 1.125rem;
+  color: #4b5563;
+  line-height: 1.6;
+}
+
+/* GRID LAYOUT */
+.features-grid {
+  display: grid;
+  gap: 1rem;
+  /* smaller gap for mobile */
+  margin-top: 2rem;
+}
+
+@media (min-width: 640px) {
+  .features-grid {
+    gap: 1.5rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .features-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+  }
+}
+
+/* INDIVIDUAL CARD */
+.feature-card {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  /* prevents overflow */
+}
+
+.feature-card-content {
+  padding: 1.5rem;
+}
+
+.feature-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 9999px;
+  background-color: #fce7f3;
+  margin-bottom: 1rem;
+}
+
+.feature-icon span {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #db2777;
+}
+
+.feature-card h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.feature-card p {
+  margin-top: 0.5rem;
+  font-size: 1rem;
+  color: #4b5563;
+  line-height: 1.5;
+}
+
+/* EXTRA: make fonts and spacing shrink gracefully on very small screens */
+@media (max-width: 400px) {
+  .features-header h2 {
+    font-size: 1.5rem;
+  }
+
+  .features-header p {
+    font-size: 1rem;
+  }
+
+  .feature-card-content {
+    padding: 1rem;
+  }
+
+  .feature-card h3 {
+    font-size: 1.1rem;
+  }
+
+  .feature-card p {
+    font-size: 0.9rem;
+  }
+}

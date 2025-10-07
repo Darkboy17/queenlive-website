@@ -1,0 +1,160 @@
+.success-section {
+    padding: 4rem 1rem;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.section-header {
+    text-align: center;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.section-header h2 {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.section-header p {
+    margin-top: 1rem;
+    font-size: 1.125rem;
+    color: #555;
+}
+
+.cards-grid {
+    margin-top: 4rem;
+    display: grid;
+    gap: 2rem;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.card {
+    text-align: left;
+    border: 1px solid #ddd;
+    border-radius: 0.75rem;
+    background: #fff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    width: 100%;
+}
+
+.card-content {
+    padding: 1.5rem;
+}
+
+.profile {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.profile img {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 1rem;
+}
+
+.profile h3 {
+    font-weight: bold;
+}
+
+.profile .role {
+    font-size: 0.875rem;
+    color: #db2777;
+}
+
+.highlight h4 {
+    font-size: 1.125rem;
+    font-weight: bold;
+    color: #111;
+}
+
+.highlight p {
+    font-size: 0.875rem;
+    color: #666;
+}
+
+blockquote {
+    padding-top: 18px;
+    padding-bottom: 18px;
+    font-size: 0.875rem;
+    line-height: 1.6;
+    color: #555;
+    margin: 1.5rem 0;
+}
+
+.details {
+    border-top: 1px solid #ddd;
+    padding-top: 1rem;
+    font-size: 0.875rem;
+}
+
+.details div {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+}
+
+.details span {
+    color: #555;
+}
+
+.details .value {
+    font-weight: bold;
+    color: #db2777;
+}
+
+.details a {
+    color: #db2777;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.details a:hover {
+    text-decoration: underline;
+}
+
+.extra {
+    color: #7e22ce;
+    font-weight: 500;
+    margin-bottom: 0.75rem;
+}
+
+.more-button {
+    text-align: center;
+    margin-top: 3rem;
+}
+
+.more-button button {
+    background: #db2777;
+    color: #fff;
+    padding: 0.75rem 1.25rem;
+    border-radius: 0.5rem;
+    border: none;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.more-button button:hover {
+    background: #be185d;
+}
+
+
+/* Responsive */
+@media (min-width: 768px) {
+    .cards-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 1024px) {
+    .cards-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}

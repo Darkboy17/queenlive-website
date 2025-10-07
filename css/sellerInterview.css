@@ -1,0 +1,14 @@
+  @keyframes seller-scroll {
+    from {
+      transform: translateX(0);
+    }
+
+    to {
+      transform: translateX(calc(-1 * var(--scroll-width) / 2));
+    }
+  }
+
+  /* Pause scroll on hover */
+  #videoScrollerInner:hover {
+    animation-play-state: paused !important;
+  }

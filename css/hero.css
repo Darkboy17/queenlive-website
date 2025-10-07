@@ -1,0 +1,43 @@
+.typing-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  background: white;
+  margin-left: 4px;
+  animation: cursor-blink 1s steps(1) infinite;
+  vertical-align: bottom;
+}
+
+@keyframes cursor-blink {
+
+  0%,
+  50% {
+    opacity: 1;
+  }
+
+  51%,
+  100% {
+    opacity: 0;
+  }
+}
+
+.pendulum {
+  animation: pendulum 2s ease-in-out infinite;
+  transform-origin: center top;
+}
+
+@keyframes pendulum {
+
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+
+  25% {
+    transform: rotate(2deg);
+  }
+
+  75% {
+    transform: rotate(-2deg);
+  }
+}
