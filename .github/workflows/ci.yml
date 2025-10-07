@@ -21,10 +21,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    resources:
-    cpu: 4
-    memory: 16GB
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
