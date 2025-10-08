@@ -86,6 +86,16 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # Cache the dist folder to speed up builds
+      - name: Restore dist cache
+        uses: actions/cache@v4
+        with:
+          path: dist
+          key: dist-${{ github.sha }}
+          restore-keys: |
+            dist-
+
+
       # -----------------------------------------------------------
       # STEP 6️⃣: Smart build logic
       # -----------------------------------------------------------
@@ -118,6 +128,15 @@ jobs:
       - name: Skip build
         if: env.DIST_EXISTS == 'true' && env.PUBLIC_CHANGED != 'true' && env.RELEVANT_CHANGED != 'true'
         run: echo "⏭️ Skipping build — no changes detected"
+      
+      # Cache the dist folder after build
+      - name: Save dist cache
+        if: env.RELEVANT_CHANGED == 'true' || env.PUBLIC_CHANGED == 'true'
+        uses: actions/cache@v4
+        with:
+          path: dist
+          key: dist-${{ github.sha }}
+
 
       # -----------------------------------------------------------
       # STEP 7️⃣: Docker build and push
