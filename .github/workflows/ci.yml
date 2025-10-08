@@ -155,7 +155,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build and push Docker image
-        if: env.SHOULD_DEPLOY == 'true'
+        if: env.SHOULD_DEPLOY == 'true' || env.RELEVANT_CHANGED == 'true'
         uses: docker/build-push-action@v5
         with:
           context: .
@@ -163,7 +163,7 @@ jobs:
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/queenlive:latest
 
       - name: Skip Docker build
-        if: env.SHOULD_DEPLOY != 'true'
+        if: env.SHOULD_DEPLOY != 'true' || env.RELEVANT_CHANGED != 'true'
         run: echo "⏭️ Skipping Docker build — nothing new to deploy"
 
       - name: Logout from Docker Hub
