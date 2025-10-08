@@ -109,7 +109,7 @@ jobs:
 
       - name: Fast build
         if: env.FAST_BUILD == 'true'
-        run: npm run build:fast
+        run: npm run build
 
 
       # -----------------------------------------------------------
