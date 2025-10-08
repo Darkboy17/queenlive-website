@@ -59,20 +59,40 @@ jobs:
           # Detect if public/ changed
           if git rev-parse HEAD^ >/dev/null 2>&1; then
             if git diff --quiet HEAD^ HEAD -- public/; then
-              echo "🟢 No changes in public/"
               PUBLIC_CHANGED=false
             else
-              echo "🟡 Changes detected in public/"
               PUBLIC_CHANGED=true
             fi
           else
-            echo "🟠 First commit — forcing build"
             PUBLIC_CHANGED=true
           fi
 
-          # Export variables
-          echo "PUBLIC_EXISTS=$PUBLIC_EXISTS" >> $GITHUB_ENV
-          echo "PUBLIC_CHANGED=$PUBLIC_CHANGED" >> $GITHUB_ENV
+          # Detect if other code/config changed
+          PATHS="js/ css/ components/ index.html build.js package.json Dockerfile .github/workflows/ci.yml"
+          if git rev-parse HEAD^ >/dev/null 2>&1; then
+            if git diff --quiet HEAD^ HEAD -- $PATHS; then
+              RELEVANT_CHANGED=false
+            else
+              RELEVANT_CHANGED=true
+            fi
+          else
+            RELEVANT_CHANGED=true
+          fi
+
+          # Decide build type
+          if [ "$PUBLIC_EXISTS" = "false" ] || [ "$PUBLIC_CHANGED" = "true" ]; then
+            echo "FULL_BUILD=true" >> $GITHUB_ENV
+            echo "FAST_BUILD=false" >> $GITHUB_ENV
+            echo "SHOULD_DEPLOY=true" >> $GITHUB_ENV
+          elif [ "$RELEVANT_CHANGED" = "true" ]; then
+            echo "FULL_BUILD=false" >> $GITHUB_ENV
+            echo "FAST_BUILD=true" >> $GITHUB_ENV
+            echo "SHOULD_DEPLOY=true" >> $GITHUB_ENV
+          else
+            echo "FULL_BUILD=false" >> $GITHUB_ENV
+            echo "FAST_BUILD=false" >> $GITHUB_ENV
+            echo "SHOULD_DEPLOY=false" >> $GITHUB_ENV
+          fi
 
       # -----------------------------------------------------------
       # STEP 4️⃣: Install dependencies
@@ -83,25 +103,13 @@ jobs:
       # -----------------------------------------------------------
       # STEP 5️⃣: Conditional build logic (full vs fast)
       # -----------------------------------------------------------
-      - name: Full build (npm run build)
-        if: env.PUBLIC_EXISTS == 'false' || env.PUBLIC_CHANGED == 'true'
-        run: |
-          echo "🛠️ Running FULL build (npm run build)"
-          npm run build
-          echo "SHOULD_DEPLOY=true" >> $GITHUB_ENV
+      - name: Full build
+        if: env.FULL_BUILD == 'true'
+        run: npm run build
 
-      - name: Fast build (npm run build:fast)
-        if: env.PUBLIC_EXISTS == 'true' && env.PUBLIC_CHANGED == 'false'
-        run: |
-          echo "⚡ Running FAST build (npm run build:fast)"
-          npm run build:fast
-          echo "SHOULD_DEPLOY=true" >> $GITHUB_ENV
-
-      - name: Skip build
-        if: env.PUBLIC_EXISTS == 'true' && env.PUBLIC_CHANGED == 'false'
-        run: |
-          echo "⏭️ No public changes detected — using existing build output"
-          echo "SHOULD_DEPLOY=false" >> $GITHUB_ENV
+      - name: Fast build
+        if: env.FAST_BUILD == 'true'
+        run: npm run build:fast
 
 
       # -----------------------------------------------------------
