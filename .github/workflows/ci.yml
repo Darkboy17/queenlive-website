@@ -155,7 +155,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build and push Docker image
-        if: env.SHOULD_DEPLOY == 'true' || env.RELEVANT_CHANGED == 'true'
+        if: env.RELEVANT_CHANGED == 'true'
         uses: docker/build-push-action@v5
         with:
           context: .
