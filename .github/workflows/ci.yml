@@ -3,17 +3,17 @@ name: Build, Push & Deploy Docker Image
 on:
   push:
     branches:
-      - main    # Run this when you push to main branch
+      - main
     paths:
-      - 'public/**'                 # new images or assets
-      - 'js/**'                     # new JavaScript features
-      - 'css/**'                    # style changes
-      - 'index.html'                # main HTML changes
-      - 'build.js'                  # if you modify the build script
-      - 'package.json'              # dependency updates
-      - 'Dockerfile'                # changes to the Dockerfile
-      - '.github/workflows/ci.yml'  # changes to this workflow
-      - 'components/**'             # changes to components
+      - 'public/**'
+      - 'js/**'
+      - 'css/**'
+      - 'components/**'
+      - 'index.html'
+      - 'build.js'
+      - 'package.json'
+      - 'Dockerfile'
+      - '.github/workflows/ci.yml'
   pull_request:
     branches:
       - main
@@ -33,11 +33,11 @@ jobs:
         with:
           node-version: 18
 
-      # ---------------- Detect changes -----------------
-      - name: Detect changes in public folder
+      # ---------------- Detect relevant changes -----------------
+      - name: Detect changes in relevant files
         id: changes
         run: |
-          echo "🔍 Checking for changes in public/ folder..."
+          echo "🔍 Checking for code or asset changes..."
           git fetch origin main --depth=2 || true
 
           LAST_COMMIT=$(git rev-parse HEAD)
@@ -45,11 +45,14 @@ jobs:
 
           echo "Comparing commits: $PREV_COMMIT -> $LAST_COMMIT"
 
-          if git diff --quiet $PREV_COMMIT $LAST_COMMIT -- public/; then
-            echo "✅ No changes detected in public/"
+          # Folders and files that should trigger a build
+          PATHS="public/ js/ css/ components/ index.html build.js package.json Dockerfile"
+
+          if git diff --quiet $PREV_COMMIT $LAST_COMMIT -- $PATHS; then
+            echo "✅ No relevant changes detected"
             echo "CHANGED=false" >> $GITHUB_ENV
           else
-            echo "🟡 Changes detected in public/"
+            echo "🟡 Relevant changes detected"
             echo "CHANGED=true" >> $GITHUB_ENV
           fi
 
@@ -60,12 +63,12 @@ jobs:
       - name: Run build.js (conditionally)
         if: env.CHANGED == 'true'
         run: |
-          echo "🛠️ Running build because public/ changed..."
+          echo "🛠️ Running build because changes were detected..."
           npm run build
 
       - name: Skip build (no changes)
         if: env.CHANGED != 'true'
-        run: echo "⏭️ Skipping build — no changes in public/ folder"
+        run: echo "⏭️ Skipping build — no relevant changes detected"
 
       # ---------------- Docker -----------------
       - name: Set up Docker Buildx
@@ -87,7 +90,7 @@ jobs:
 
       - name: Skip Docker build (no changes)
         if: env.CHANGED != 'true'
-        run: echo "⏭️ Skipping Docker build — no public/ changes detected"
+        run: echo "⏭️ Skipping Docker build — no relevant changes detected"
 
       - name: Logout from Docker Hub
         run: docker logout
