@@ -97,6 +97,7 @@ jobs:
           else
             RELEVANT_CHANGED=true
           fi
+          echo "RELEVANT_CHANGED=$RELEVANT_CHANGED" >> $GITHUB_ENV
 
           # Decide build type
           if [ "$PUBLIC_EXISTS" = "false" ] || [ "$PUBLIC_CHANGED" = "true" ] || [ "$DIST_EXISTS" = "false" ]; then
