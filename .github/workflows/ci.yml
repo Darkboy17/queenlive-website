@@ -33,44 +33,69 @@ jobs:
         with:
           node-version: 18
 
-      # ---------------- Detect relevant changes -----------------
-      - name: Detect changes in relevant files
-        id: changes
+      # -----------------------------------------------------------
+      # STEP 1️⃣: Detect if public/ changed (controls npm run build)
+      # -----------------------------------------------------------
+      - name: Detect changes in public folder
+        id: detect_public
         run: |
-          echo "🔍 Checking for code or asset changes..."
-          git fetch origin main --depth=2 || true
-
-          LAST_COMMIT=$(git rev-parse HEAD)
-          PREV_COMMIT=$(git rev-list --max-count=2 HEAD | tail -n1)
-
-          echo "Comparing commits: $PREV_COMMIT -> $LAST_COMMIT"
-
-          # Folders and files that should trigger a build
-          PATHS="public/ js/ css/ components/ index.html build.js package.json Dockerfile"
-
-          if git diff --quiet $PREV_COMMIT $LAST_COMMIT -- $PATHS; then
-            echo "✅ No relevant changes detected"
-            echo "CHANGED=false" >> $GITHUB_ENV
+          echo "🔍 Checking if 'public/' changed..."
+          if git rev-parse HEAD^ >/dev/null 2>&1; then
+            if git diff --quiet HEAD^ HEAD -- public/; then
+              echo "🟢 No changes in public/"
+              echo "PUBLIC_CHANGED=false" >> $GITHUB_ENV
+            else
+              echo "🟡 Changes detected in public/"
+              echo "PUBLIC_CHANGED=true" >> $GITHUB_ENV
+            fi
           else
-            echo "🟡 Relevant changes detected"
-            echo "CHANGED=true" >> $GITHUB_ENV
+            echo "First commit — forcing build"
+            echo "PUBLIC_CHANGED=true" >> $GITHUB_ENV
           fi
 
-      # ---------------- Build -----------------
+      # -----------------------------------------------------------
+      # STEP 2️⃣: Detect if any relevant project files changed
+      # -----------------------------------------------------------
+      - name: Detect relevant project changes
+        id: detect_relevant
+        run: |
+          echo "🔍 Checking if relevant code/config files changed..."
+          if git rev-parse HEAD^ >/dev/null 2>&1; then
+            PATHS="js/ css/ components/ index.html build.js package.json Dockerfile .github/workflows/ci.yml"
+            if git diff --quiet HEAD^ HEAD -- $PATHS; then
+              echo "🟢 No relevant changes in app code/config"
+              echo "RELEVANT_CHANGED=false" >> $GITHUB_ENV
+            else
+              echo "🟡 Relevant changes detected"
+              echo "RELEVANT_CHANGED=true" >> $GITHUB_ENV
+            fi
+          else
+            echo "First commit — forcing deploy"
+            echo "RELEVANT_CHANGED=true" >> $GITHUB_ENV
+          fi
+
+      # -----------------------------------------------------------
+      # STEP 3️⃣: Install dependencies
+      # -----------------------------------------------------------
       - name: Install dependencies
         run: npm ci
 
+      # -----------------------------------------------------------
+      # STEP 4️⃣: Run npm run build ONLY if public/ changed
+      # -----------------------------------------------------------
       - name: Run build.js (conditionally)
-        if: env.CHANGED == 'true'
+        if: env.PUBLIC_CHANGED == 'true'
         run: |
-          echo "🛠️ Running build because changes were detected..."
+          echo "🛠️ Running npm run build because public/ changed"
           npm run build
 
-      - name: Skip build (no changes)
-        if: env.CHANGED != 'true'
-        run: echo "⏭️ Skipping build — no relevant changes detected"
+      - name: Skip npm run build
+        if: env.PUBLIC_CHANGED != 'true'
+        run: echo "⏭️ Skipping npm run build (no public/ changes)"
 
-      # ---------------- Docker -----------------
+      # -----------------------------------------------------------
+      # STEP 5️⃣: Build and push Docker image if app changed
+      # -----------------------------------------------------------
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -81,23 +106,25 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build and push Docker image
-        if: env.CHANGED == 'true'
+        if: env.RELEVANT_CHANGED == 'true' || env.PUBLIC_CHANGED == 'true'
         uses: docker/build-push-action@v5
         with:
           context: .
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/queenlive:latest
 
-      - name: Skip Docker build (no changes)
-        if: env.CHANGED != 'true'
-        run: echo "⏭️ Skipping Docker build — no relevant changes detected"
+      - name: Skip Docker build
+        if: env.RELEVANT_CHANGED != 'true' && env.PUBLIC_CHANGED != 'true'
+        run: echo "⏭️ Skipping Docker build (no relevant changes)"
 
       - name: Logout from Docker Hub
         run: docker logout
 
-      # ---------------- Auto-deploy -----------------
+      # -----------------------------------------------------------
+      # STEP 6️⃣: Deploy only if relevant or public changed
+      # -----------------------------------------------------------
       - name: Deploy to GCP VM via SSH
-        if: env.CHANGED == 'true'
+        if: env.RELEVANT_CHANGED == 'true' || env.PUBLIC_CHANGED == 'true'
         uses: appleboy/ssh-action@v0.1.6
         with:
           host: ${{ secrets.GCP_VM_HOST }}
@@ -110,6 +137,6 @@ jobs:
             docker rm queenlive || true
             docker run -d --name queenlive -p 80:80 ${{ secrets.DOCKERHUB_USERNAME }}/queenlive:latest
 
-      - name: Skip deploy (no changes)
-        if: env.CHANGED != 'true'
+      - name: Skip deploy
+        if: env.RELEVANT_CHANGED != 'true' && env.PUBLIC_CHANGED != 'true'
         run: echo "⏭️ Skipping deploy — nothing new to release"
