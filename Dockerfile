@@ -1,19 +1,14 @@
 # Stage 1: Build the app
 FROM node:18-alpine AS builder
+
+# Set working directory
 WORKDIR /app
 
-# 🧰 Install build tools needed for sharp/libvips
-RUN apk add --no-cache \
-    python3 \
-    make \
-    g++ \
-    vips-dev
-
-# Copy package files & install deps
+# Copy package.json and install dependencies
 COPY package*.json ./
-RUN npm ci
+RUN npm install
 
-# Copy sources
+# Copy all source files
 COPY . .
 
 # Conditionally run build
@@ -26,9 +21,7 @@ RUN if [ "$PUBLIC_CHANGED" = "true" ]; then \
       mkdir -p dist; \
     fi
 
-# -----------------------------------------------------------
-# Stage 2️⃣: NGINX production server
-# -----------------------------------------------------------
+# Stage 2: NGINX production server
 FROM nginx:alpine
 
 # Install bash and curl for healthcheck
@@ -43,12 +36,12 @@ COPY --from=builder /app/public /usr/share/nginx/html/public
 # Copy optimized NGINX configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Optional: Verify key assets copied
+# After copying files in stage 2
 RUN find /usr/share/nginx/html -name "*.ico" -o -name "favicon*" | head -10
 
 # Healthcheck
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
     CMD curl -f http://localhost/ || exit 1
 
-# Expose port
+# Expose port 80
 EXPOSE 80
