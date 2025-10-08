@@ -163,7 +163,7 @@ jobs:
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/queenlive:latest
 
       - name: Skip Docker build
-        if: env.SHOULD_DEPLOY != 'true' || env.RELEVANT_CHANGED != 'true'
+        if: env.RELEVANT_CHANGED != 'true'
         run: echo "⏭️ Skipping Docker build — nothing new to deploy"
 
       - name: Logout from Docker Hub
