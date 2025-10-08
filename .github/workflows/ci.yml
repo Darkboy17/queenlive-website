@@ -78,16 +78,15 @@ jobs:
       # STEP 4️⃣: Conditional build
       # -----------------------------------------------------------
       - name: Run build.js (conditionally)
-        if: env.PUBLIC_CHANGED == 'true'
+        if: env.PUBLIC_CHANGED == 'true' || env.RELEVANT_CHANGED == 'true'
         run: |
-          echo "🛠️ Running npm run build because public/ changed"
+          echo "🛠️ Running npm run build because relevant/public files changed"
           npm run build
 
       - name: Skip npm run build
-        if: env.PUBLIC_CHANGED != 'true'
+        if: env.PUBLIC_CHANGED != 'true' && env.RELEVANT_CHANGED != 'true'
         run: |
-          echo "⏭️ Skipping npm run build (no public/ changes)"
-          # Ensure dist exists so Docker build doesn't fail
+          echo "⏭️ Skipping npm run build (no relevant/public changes)"
           mkdir -p dist
 
       # -----------------------------------------------------------
@@ -109,6 +108,8 @@ jobs:
           context: .
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/queenlive:latest
+          build-args: |
+            PUBLIC_CHANGED=${{ env.PUBLIC_CHANGED }}
 
       - name: Skip Docker build
         if: env.RELEVANT_CHANGED != 'true' && env.PUBLIC_CHANGED != 'true'
