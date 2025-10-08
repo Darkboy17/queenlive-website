@@ -83,17 +83,19 @@ jobs:
       # -----------------------------------------------------------
       # STEP 4️⃣: Conditional build
       # -----------------------------------------------------------
-      - name: Run build.js (conditionally)
-        if: env.PUBLIC_CHANGED == 'true' || env.RELEVANT_CHANGED == 'true'
+      # Full build when public/ assets changed
+      - name: Run build.js (with conversion)
+        if: env.PUBLIC_CHANGED == 'true'
         run: |
-          echo "🛠️ Running npm run build because relevant/public files changed"
+          echo "🛠️ Running npm run build because public folder changed"
           npm run build
 
-      - name: Skip npm run build
-        if: env.PUBLIC_CHANGED != 'true' && env.RELEVANT_CHANGED != 'true'
+      # Fast build (skip media conversion) when only code/config changed
+      - name: Run build.js (skip conversion)
+        if: env.PUBLIC_CHANGED != 'true' && env.RELEVANT_CHANGED == 'true'
         run: |
-          echo "⏭️ Skipping npm run build (no relevant/public changes)"
-          mkdir -p dist
+          echo "⚡ Running npm run build:fast because only code/config changed"
+          npm run build:fast
 
       # -----------------------------------------------------------
       # STEP 5️⃣: Build and push Docker image if app changed

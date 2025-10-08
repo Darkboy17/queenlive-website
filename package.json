@@ -40,6 +40,7 @@
   "type": "module",
   "scripts": {
     "build": "node build.js",
+    "build:fast": "node build.js --no-conversion",
     "prod": "npx http-server dist -p 8080 -c-1 -P http://localhost:8080?",
     "dev": "npx http-server . -p 8080 -c-1 -P http://localhost:8080?"
   },
