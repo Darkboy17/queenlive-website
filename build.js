@@ -120,6 +120,7 @@ if (!noConversion) {
 } else {
   console.log(chalk.yellow('⏭️  Skipping video conversions (--no-conversion)'));
 }
+
 /* ───────────────────────── 3) other files copy ──────────────────── */
 const others = globSync('**/*', {
   cwd: SRC,
