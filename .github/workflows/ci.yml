@@ -32,7 +32,18 @@ jobs:
           fetch-depth: 2
 
       # -----------------------------------------------------------
-      # STEP 2️⃣: Setup Node.js
+      # STEP 2️⃣: Restore dist cache
+      # -----------------------------------------------------------
+      - name: Restore dist cache
+        uses: actions/cache@v4
+        with:
+          path: dist
+          key: dist-${{ hashFiles('public/**', 'js/**', 'css/**', 'components/**', 'index.html', 'build.js') }}
+          restore-keys: |
+            dist-
+
+      # -----------------------------------------------------------
+      # STEP 3️⃣: Setup Node.js
       # -----------------------------------------------------------
       - name: Set up Node.js
         uses: actions/setup-node@v3
@@ -40,12 +51,21 @@ jobs:
           node-version: 18
 
       # -----------------------------------------------------------
-      # STEP 3️⃣: Smart build detection
+      # STEP 4️⃣: Smart build logic
       # -----------------------------------------------------------
       - name: Smart build logic
         id: smart_build
         run: |
           echo "🧠 Checking build conditions..."
+
+          # Check if dist exists (from cache)
+          if [ -d "dist" ]; then
+            echo "✅ Found dist/ folder (cached)"
+            DIST_EXISTS=true
+          else
+            echo "❌ No dist/ folder found — forcing full build"
+            DIST_EXISTS=false
+          fi
 
           # Check if public/ folder exists
           if [ -d "public" ]; then
@@ -67,7 +87,7 @@ jobs:
             PUBLIC_CHANGED=true
           fi
 
-          # Detect if other code/config changed
+          # Detect if other app files changed
           PATHS="js/ css/ components/ index.html build.js package.json Dockerfile .github/workflows/ci.yml"
           if git rev-parse HEAD^ >/dev/null 2>&1; then
             if git diff --quiet HEAD^ HEAD -- $PATHS; then
@@ -80,28 +100,31 @@ jobs:
           fi
 
           # Decide build type
-          if [ "$PUBLIC_EXISTS" = "false" ] || [ "$PUBLIC_CHANGED" = "true" ]; then
+          if [ "$PUBLIC_EXISTS" = "false" ] || [ "$PUBLIC_CHANGED" = "true" ] || [ "$DIST_EXISTS" = "false" ]; then
+            echo "🧩 Full build required"
             echo "FULL_BUILD=true" >> $GITHUB_ENV
             echo "FAST_BUILD=false" >> $GITHUB_ENV
             echo "SHOULD_DEPLOY=true" >> $GITHUB_ENV
           elif [ "$RELEVANT_CHANGED" = "true" ]; then
+            echo "⚡ Fast build triggered"
             echo "FULL_BUILD=false" >> $GITHUB_ENV
             echo "FAST_BUILD=true" >> $GITHUB_ENV
             echo "SHOULD_DEPLOY=true" >> $GITHUB_ENV
           else
+            echo "🟡 No relevant changes — skipping build"
             echo "FULL_BUILD=false" >> $GITHUB_ENV
             echo "FAST_BUILD=false" >> $GITHUB_ENV
             echo "SHOULD_DEPLOY=false" >> $GITHUB_ENV
           fi
 
       # -----------------------------------------------------------
-      # STEP 4️⃣: Install dependencies
+      # STEP 5️⃣: Install dependencies
       # -----------------------------------------------------------
       - name: Install dependencies
         run: npm ci
 
       # -----------------------------------------------------------
-      # STEP 5️⃣: Conditional build logic (full vs fast)
+      # STEP 6️⃣: Conditional build logic (full vs fast)
       # -----------------------------------------------------------
       - name: Full build
         if: env.FULL_BUILD == 'true'
@@ -111,9 +134,17 @@ jobs:
         if: env.FAST_BUILD == 'true'
         run: npm run build:fast
 
+      # -----------------------------------------------------------
+      # STEP 7️⃣: Save dist cache
+      # -----------------------------------------------------------
+      - name: Save dist cache
+        uses: actions/cache@v4
+        with:
+          path: dist
+          key: dist-${{ hashFiles('public/**', 'js/**', 'css/**', 'components/**', 'index.html', 'build.js') }}
 
       # -----------------------------------------------------------
-      # STEP 6️⃣: Docker build & push
+      # STEP 8️⃣: Docker build & push
       # -----------------------------------------------------------
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -140,7 +171,7 @@ jobs:
         run: docker logout
 
       # -----------------------------------------------------------
-      # STEP 7️⃣: Auto-deploy to GCP VM via SSH
+      # STEP 9️⃣: Auto-deploy to GCP VM via SSH
       # -----------------------------------------------------------
       - name: Deploy to GCP VM via SSH
         if: env.SHOULD_DEPLOY == 'true'
