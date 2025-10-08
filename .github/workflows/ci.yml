@@ -173,7 +173,7 @@ jobs:
       # STEP 9️⃣: Auto-deploy to GCP VM via SSH
       # -----------------------------------------------------------
       - name: Deploy to GCP VM via SSH
-        if: env.SHOULD_DEPLOY == 'true'
+        if: env.SHOULD_DEPLOY == 'true' && env.RELEVANT_CHANGED == 'true'
         uses: appleboy/ssh-action@v0.1.6
         with:
           host: ${{ secrets.GCP_VM_HOST }}
