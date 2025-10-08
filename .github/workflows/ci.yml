@@ -86,57 +86,25 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # Cache the dist folder to speed up builds
-      - name: Restore dist cache
-        uses: actions/cache@v4
-        with:
-          path: dist
-          key: dist-${{ github.sha }}
-          restore-keys: |
-            dist-
-
-
       # -----------------------------------------------------------
-      # STEP 6️⃣: Smart build logic
+      # STEP 6️⃣: Full build if: dist missing OR public changed
       # -----------------------------------------------------------
-      - name: Smart build detection
-        id: smart_build
-        run: |
-          echo "🧠 Checking if 'dist/' exists..."
-          if [ -d "dist" ]; then
-            echo "✅ Found existing dist/ folder"
-            echo "DIST_EXISTS=true" >> $GITHUB_ENV
-          else
-            echo "❌ No dist/ folder found — forcing full build"
-            echo "DIST_EXISTS=false" >> $GITHUB_ENV
-          fi
-
-      # Full build if: dist missing OR public changed
       - name: Full build (npm run build)
-        if: env.DIST_EXISTS == 'false' || env.PUBLIC_CHANGED == 'true'
+        if: env.PUBLIC_CHANGED == 'true'
         run: |
           echo "🛠️ Running full build (npm run build)"
           npm run build
 
       # Fast build if: dist exists, public unchanged, but code/config changed
       - name: Fast build (npm run build:fast)
-        if: env.DIST_EXISTS == 'true' && env.PUBLIC_CHANGED != 'true' && env.RELEVANT_CHANGED == 'true'
+        if: env.PUBLIC_CHANGED != 'true' && env.RELEVANT_CHANGED == 'true'
         run: |
           echo "⚡ Running fast build (npm run build:fast)"
           npm run build:fast
 
       - name: Skip build
-        if: env.DIST_EXISTS == 'true' && env.PUBLIC_CHANGED != 'true' && env.RELEVANT_CHANGED != 'true'
+        if: env.PUBLIC_CHANGED != 'true' && env.RELEVANT_CHANGED != 'true'
         run: echo "⏭️ Skipping build — no changes detected"
-      
-      # Cache the dist folder after build
-      - name: Save dist cache
-        if: env.RELEVANT_CHANGED == 'true' || env.PUBLIC_CHANGED == 'true'
-        uses: actions/cache@v4
-        with:
-          path: dist
-          key: dist-${{ github.sha }}
-
 
       # -----------------------------------------------------------
       # STEP 7️⃣: Docker build and push
@@ -156,7 +124,6 @@ jobs:
         with:
           context: .
           push: true
-          no-cache: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/queenlive:latest
           build-args: |
             PUBLIC_CHANGED=${{ env.PUBLIC_CHANGED }}
