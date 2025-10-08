@@ -11,9 +11,6 @@ RUN npm install
 # Copy all source files
 COPY . .
 
-# Run build
-RUN npm run build
-
 # Stage 2: NGINX production server
 FROM nginx:alpine
 
