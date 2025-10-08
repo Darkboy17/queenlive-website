@@ -11,16 +11,6 @@ RUN npm install
 # Copy all source files
 COPY . .
 
-# Conditionally run build
-ARG PUBLIC_CHANGED=true
-RUN if [ "$PUBLIC_CHANGED" = "true" ]; then \
-      echo "🛠️ Running npm run build because relevant/public files changed"; \
-      npm run build; \
-    else \
-      echo "⏭️ Skipping npm run build (no relevant/public changes)"; \
-      mkdir -p dist; \
-    fi
-
 # Stage 2: NGINX production server
 FROM nginx:alpine
 
