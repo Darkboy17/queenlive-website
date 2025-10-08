@@ -10,17 +10,14 @@ import chalk from 'chalk';
 import { fileURLToPath } from 'url';
 import { cpus } from 'os';
 
-// Check for --no-conversion flag
+// ---------------------------- flags & paths ----------------------------
 const noConversion = process.argv.includes('--no-conversion');
 console.log(chalk.gray(`Build mode: ${noConversion ? 'SKIP media conversion' : 'FULL build'}\n`));
 
-/* ──────────────────────────────── helpers ───────────────────────── */
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const SRC = __dirname;                        // already .../ql-website
+const SRC = __dirname;
 const DIST = path.join(SRC, 'dist');
-// Exclude node_modules from all globSync calls by default
-const GLOB_IGNORE = ['node_modules/**'];
 
 const CONCURRENCY = Math.max(2, cpus().length - 1);
 const limit = pLimit(CONCURRENCY);
@@ -29,18 +26,24 @@ function createBar(mb, total, label) {
   return mb.create(total, 0, { label: chalk.cyan(label.padEnd(6)) });
 }
 
-/* ───────────────────────── clean + prepare ──────────────────────── */
-await fs.rm(DIST, { recursive: true, force: true });
+// ---------------------------- clean + prepare ----------------------------
+// Only remove dist folder on FULL build
+if (!noConversion) {
+  await fs.rm(DIST, { recursive: true, force: true });
+  console.log('🧹 Cleaned DIST folder for FULL build');
+}
+
+// Always ensure dist exists
 await fs.mkdir(DIST, { recursive: true });
 
-/* MultiBar instance (one bar per phase) ---------------------------- */
+// MultiBar for progress
 const multibar = new cliProgress.MultiBar({
   clearOnComplete: false,
   hideCursor: true,
   format: '{label} |{bar}| {value}/{total} {percentage}% ETA:{eta_formatted}'
 }, cliProgress.Presets.shades_grey);
 
-/* ───────────────────────── 1) images → webp ─────────────────────── */
+// ---------------------------- 1) Images → webp ----------------------------
 if (!noConversion) {
   const images = globSync('**/*.{png,jpg,jpeg}', { cwd: SRC, nodir: true });
   const imgBar = createBar(multibar, images.length, 'IMG');
@@ -50,16 +53,10 @@ if (!noConversion) {
       const src = path.join(SRC, f);
       const destDir = path.dirname(path.join(DIST, f));
       const lower = f.toLowerCase().replace(/\\/g, '/');
-
       await fs.mkdir(destDir, { recursive: true });
 
-      if (
-        lower.includes('/thumbnail.') ||
-        lower.endsWith('thumbnail.png') ||
-        lower.endsWith('thumbnail.jpg') ||
-        lower.endsWith('thumbnail.jpeg')
-      ) {
-        // ✅ Copy thumbnail image as-is (no conversion)
+      if (lower.includes('/thumbnail.') || lower.endsWith('thumbnail.png') || lower.endsWith('thumbnail.jpg') || lower.endsWith('thumbnail.jpeg')) {
+        // Copy thumbnail as-is
         const dest = path.join(DIST, f);
         await fs.copyFile(src, dest);
         console.log(`🟡 Copied (no conversion): ${f}`);
@@ -75,15 +72,14 @@ if (!noConversion) {
       } catch (err) {
         console.error(`❌ Failed to convert ${f}:`, err.message);
       }
-
       imgBar.increment();
     }))
   );
 } else {
-  console.log(chalk.yellow('⏭️  Skipping image conversions (--no-conversion)'));
+  console.log(chalk.yellow('⏭️ Skipping image conversions (--no-conversion)'));
 }
 
-/* ───────────────────────── 2) videos → webm ─────────────────────── */
+// ---------------------------- 2) Videos → webm ----------------------------
 if (!noConversion) {
   const videos = globSync('**/*.mp4', { cwd: SRC, nodir: true });
   const vidBar = createBar(multibar, videos.length, 'VID');
@@ -118,10 +114,10 @@ if (!noConversion) {
     }))
   );
 } else {
-  console.log(chalk.yellow('⏭️  Skipping video conversions (--no-conversion)'));
+  console.log(chalk.yellow('⏭️ Skipping video conversions (--no-conversion)'));
 }
 
-/* ───────────────────────── 3) other files copy ──────────────────── */
+// ---------------------------- 3) Other files copy ----------------------------
 const others = globSync('**/*', {
   cwd: SRC,
   nodir: true,
@@ -139,7 +135,7 @@ await Promise.all(
   }))
 );
 
-/* ───────────────────────── 4) HTML rewrite ──────────────────────── */
+// ---------------------------- 4) HTML rewrite ----------------------------
 const htmlFiles = globSync('**/*.html', { cwd: DIST, nodir: true });
 const htmlBar = createBar(multibar, htmlFiles.length, 'HTML');
 
@@ -149,7 +145,6 @@ await Promise.all(
     let html = await fs.readFile(file, 'utf8');
 
     html = html
-      // replace only if NOT thumbnail.png
       .replace(/(?<!thumbnail)\.(png|jpe?g)(?=["'])/gi, '.webp')
       .replace(/\.mp4(?=["'])/gi, '.webm');
 
@@ -158,7 +153,7 @@ await Promise.all(
   }))
 );
 
-/* ───────────────────────── 5) JS string-literal rewrite ─────────── */
+// ---------------------------- 5) JS string-literal rewrite ----------------------------
 const jsFiles = globSync('**/*.{js,jsx,ts,tsx,mjs,cjs}', { cwd: DIST, nodir: true });
 const jsBar = createBar(multibar, jsFiles.length, 'JS  ');
 
@@ -179,8 +174,7 @@ await Promise.all(
   }))
 );
 
-
-/* ───────────────────────── all done ─────────────────────────────── */
+// ---------------------------- done ----------------------------
 multibar.stop();
-console.log(chalk.green('\n✅  All assets converted. Dist ready → ' + DIST));
+console.log(chalk.green('\n✅ All assets ready → ' + DIST));
 console.log(chalk.gray(`Parallelism: ${CONCURRENCY} concurrent jobs\n`));
