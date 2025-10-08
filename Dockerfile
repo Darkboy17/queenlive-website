@@ -1,27 +1,28 @@
-# -----------------------------------------------------------
-# Stage 1️⃣: Build the app (conditionally)
-# -----------------------------------------------------------
+# Stage 1: Build the app
 FROM node:18-alpine AS builder
-
-# Set working directory
 WORKDIR /app
 
-# Copy package.json and install dependencies
+# 🧰 Install build tools needed for sharp/libvips
+RUN apk add --no-cache \
+    python3 \
+    make \
+    g++ \
+    vips-dev
+
+# Copy package files & install deps
 COPY package*.json ./
 RUN npm ci
 
-# Copy all source files
+# Copy sources
 COPY . .
 
-# -----------------------------------------------------------
-# Conditionally run build based on PUBLIC_CHANGED build arg
-# -----------------------------------------------------------
+# Conditionally run build
 ARG PUBLIC_CHANGED=true
 RUN if [ "$PUBLIC_CHANGED" = "true" ]; then \
-      echo "🛠️ Running npm run build because public/ changed"; \
+      echo "🛠️ Running npm run build because relevant/public files changed"; \
       npm run build; \
     else \
-      echo "⏭️ Skipping npm run build (no public/ changes)"; \
+      echo "⏭️ Skipping npm run build (no relevant/public changes)"; \
       mkdir -p dist; \
     fi
 
