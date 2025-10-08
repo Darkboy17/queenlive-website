@@ -108,8 +108,6 @@ jobs:
           context: .
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/queenlive:latest
-          build-args: |
-            PUBLIC_CHANGED=${{ env.PUBLIC_CHANGED }}
 
       - name: Skip Docker build
         if: env.RELEVANT_CHANGED != 'true' && env.PUBLIC_CHANGED != 'true'
