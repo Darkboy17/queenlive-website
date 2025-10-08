@@ -47,15 +47,6 @@ jobs:
         run: |
           echo "🧠 Checking build conditions..."
 
-          # Check if dist/ folder already exists
-          if [ -d "dist" ]; then
-            echo "✅ dist/ folder exists"
-            DIST_EXISTS=true
-          else
-            echo "❌ dist/ folder missing — forcing full build"
-            DIST_EXISTS=false
-          fi
-
           # Check if public/ folder exists
           if [ -d "public" ]; then
             echo "✅ public/ folder exists"
@@ -80,7 +71,6 @@ jobs:
           fi
 
           # Export variables
-          echo "DIST_EXISTS=$DIST_EXISTS" >> $GITHUB_ENV
           echo "PUBLIC_EXISTS=$PUBLIC_EXISTS" >> $GITHUB_ENV
           echo "PUBLIC_CHANGED=$PUBLIC_CHANGED" >> $GITHUB_ENV
 
@@ -94,20 +84,20 @@ jobs:
       # STEP 5️⃣: Conditional build logic
       # -----------------------------------------------------------
       - name: Full build (npm run build)
-        if: env.PUBLIC_EXISTS == 'false' || env.PUBLIC_CHANGED == 'true' || env.DIST_EXISTS == 'false'
+        if: env.PUBLIC_EXISTS == 'false' || env.PUBLIC_CHANGED == 'true'
         run: |
           echo "🛠️ Running FULL build (npm run build)"
           npm run build
 
       - name: Fast build (npm run build:fast)
-        if: env.PUBLIC_EXISTS == 'true' && env.PUBLIC_CHANGED == 'false' && env.DIST_EXISTS == 'true'
+        if: env.PUBLIC_EXISTS == 'true' && env.PUBLIC_CHANGED == 'false'
         run: |
           echo "⚡ Running FAST build (npm run build:fast)"
           npm run build:fast
 
       - name: Skip build
-        if: env.PUBLIC_EXISTS == 'true' && env.PUBLIC_CHANGED == 'false' && env.DIST_EXISTS == 'true'
-        run: echo "⏭️ No public or dist changes detected — using existing build output"
+        if: env.PUBLIC_EXISTS == 'true' && env.PUBLIC_CHANGED == 'false'
+        run: echo "⏭️ No public changes detected — using existing build output"
 
       # -----------------------------------------------------------
       # STEP 6️⃣: Docker build & push
